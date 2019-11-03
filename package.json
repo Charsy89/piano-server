@@ -1,0 +1,33 @@
+{
+  "name": "piano-server",
+  "version": "0.1.1",
+  "description": "Last attempt at making a MPP server.",
+  "main": "index.js",
+  "dependencies": {
+    "compression": "^1.7.4",
+    "events": "^3.0.0",
+    "express": "^4.17.1",
+    "ws": "^7.2.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Charsy89/piano-server.git"
+  },
+  "keywords": [
+    "mpp",
+    "multiplayer",
+    "piano",
+    "server",
+    "piano"
+  ],
+  "author": "Charsy",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/Charsy89/piano-server/issues"
+  },
+  "homepage": "https://github.com/Charsy89/piano-server#readme"
+}
