@@ -39,8 +39,6 @@ var Client = require("./Client.js");
 var ChannelManager = require("./ChannelManager.js");
 var DB = require("./DB.js");
 var msg = ["a","bye","ch","hi","+ls","-ls","m","n","userset","devices","t","chset","chown","kickban","adminmsg"]; // thanks bop it for idea
-var ls_listeners = new Map();
-var Users = new Map();
 
 cm.on("channelUpdate",function(room){
 	ls_listeners.forEach(u=>{
@@ -48,7 +46,7 @@ cm.on("channelUpdate",function(room){
 	});
 });
 
-api = {
+global.API = {
 	db:new DB(),
 	cm:new ChannelManager(this),
 	findParticipant:{
@@ -79,14 +77,15 @@ api = {
 			});
 			return ret;
 		}
-	}
+	},
+	users:new Map()
 }
 
 wss.on("connection",function(ws,req){
 	ws.ip = (req.connection.remoteAddress || req.headers["x-forwarded-for"]).replace("::ffff:","");
 	let cid = kek('keccak256').update(("lma00f"+ws.ip)).digest('hex').substr(0,24);
 	//if(true){
-		Users.set(_id,new Client(api,cid,ws));
+		API.Users.set(_id,new Client(api,cid,ws));
 	/*}else{
 		if(typeof Users.get(_id) == "undefined"){
 			Users.set(_id,new Client(db,_id).addConnection(ws));
