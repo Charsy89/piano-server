@@ -40,7 +40,7 @@ var ChannelManager = require("./ChannelManager.js");
 var DB = require("./DB.js");
 var msg = ["a","bye","ch","hi","+ls","-ls","m","n","userset","devices","t","chset","chown","kickban","adminmsg"]; // thanks bop it for idea
 
-cm.on("channelUpdate",function(room){
+API.cm.on("channelUpdate",function(room){
 	ls_listeners.forEach(u=>{
 		u.sendArray([{m:"ls",c:false,u:room}]);
 	});
