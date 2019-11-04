@@ -2,6 +2,9 @@ var fs = require('fs');
 var app = require('express')();
 var http = require('http').Server(app);
 var compress = require('compression');
+var WSS = require("ws").Server;
+var wss = new WSS({port:8080});
+global.kek = require('keccak');
 global.EventEmitter = require('events').EventEmitter;
 var path = "./static";
 
@@ -26,13 +29,68 @@ app.get("*",function(req,res){
 	});
 });
 
-app.listen(8080);
+app.listen(8079);
 
 // WebSocket Stuff
 
 ///////////////////////////////////////////////////
 
-/*var Client = require("./Client.js");
+var Client = require("./Client.js");
 var ChannelManager = require("./ChannelManager.js");
-var cm = new ChannelManager();*/
+var DB = require("./DB.js");
+var msg = ["a","bye","ch","hi","+ls","-ls","m","n","userset","devices","t","chset","chown","kickban","adminmsg"]; // thanks bop it for idea
+var ls_listeners = new Map();
+var Users = new Map();
 
+cm.on("channelUpdate",function(room){
+	ls_listeners.forEach(u=>{
+		u.sendArray([{m:"ls",c:false,u:room}]);
+	});
+});
+
+api = {
+	db:new DB(),
+	cm:new ChannelManager(this),
+	findParticipant:{
+		ByCid(cid){
+			return (Users.get(cid) || null);
+		},
+		By_id(_id){
+			let ret = null;
+			Users.forEach(function(u){
+				if(u.user._id !== _id) return;
+				ret = u;
+			});
+			return ret;
+		},
+		ById(id){
+			let ret = null;
+			Users.forEach(function(u){
+				if(u.user.id !== id) return;
+				ret = u;
+			});
+			return ret;
+		},
+		ByWsIp(ip){
+			let ret = null;
+			Users.forEach(function(u){
+				if(u.ws.ip !== ip) return;
+				ret = u;
+			});
+			return ret;
+		}
+	}
+}
+
+wss.on("connection",function(ws,req){
+	ws.ip = (req.connection.remoteAddress || req.headers["x-forwarded-for"]).replace("::ffff:","");
+	let cid = kek('keccak256').update(("lma00f"+ws.ip)).digest('hex').substr(0,24);
+	//if(true){
+		Users.set(_id,new Client(api,cid,ws));
+	/*}else{
+		if(typeof Users.get(_id) == "undefined"){
+			Users.set(_id,new Client(db,_id).addConnection(ws));
+			Users.get(_id).addConnection(ws);
+		} else Users.get(_id).addConnection(ws);
+	}*/
+});
