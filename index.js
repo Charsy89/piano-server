@@ -41,7 +41,7 @@ var DB = require("./DB.js");
 var msg = ["a","bye","ch","hi","+ls","-ls","m","n","userset","devices","t","chset","chown","kickban","adminmsg"]; // thanks bop it for idea
 
 API.cm.on("channelUpdate",function(room){
-	ls_listeners.forEach(u=>{
+	ls_listeners.forEach(function(u){
 		u.sendArray([{m:"ls",c:false,u:room}]);
 	});
 });
@@ -78,7 +78,18 @@ global.API = {
 			return ret;
 		}
 	},
-	users:new Map()
+	users:new Map(),
+	util:{
+		isString(a){
+			return typeof a === 'string';
+		},
+		isBool(a){
+			return typeof a === "boolean";
+		},
+		isTrueObj(a){
+			return typeof a === "object" && !Array.isArray(a) && a !== null;
+		}
+	}
 }
 
 wss.on("connection",function(ws,req){

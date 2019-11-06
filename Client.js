@@ -9,8 +9,7 @@ function _id(){
 	return kek('keccak256').update(("teamtrees"+"lmaoof"+Math.floor(Math.random()*8000000000))/*8bil*/).digest('hex').substr(0,24);
 }
 
-function Client(api,cid,ws){
-	this.api = api;
+function Client(cid,ws){
 	this.cid = cid;
 	this.ws = ws;
 	this.user = undefined;
@@ -47,31 +46,31 @@ Client.prototype.sendArray = function(arr){
 };
 
 Client.prototype.bindEvents = function(){
-	this.on("hi",()=>{
-		this.canConnect = true;
-		let userData = this.api.db.getUserData(this.cid);
+	let self = this;
+	this.on("hi",function(){
+		self.canConnect = true;
+		let userData = API.db.getUserData(self.cid);
 		if(!userData || userData === null){
 			let _id = _id();
-			while(this.api.db.testForId(_id)){ // make sure we don't take others' _ids
+			while(API.db.testForId(_id)){ // make sure we don't take others' _ids
 				_id = _id();
 			}
-			userData = this.api.db.setUserData(this.cid,new User("Anonymoouse",col(),_id));
+			userData = API.db.setUserData(self.cid,new User("Anonymoouse",col(),_id));
 		}
         
-		this.sendArray([{m:"hi",u:userData,t:Date.now(),v:"0.0a",motd:"You agree to read this message"}]);
+		self.sendArray([{m:"hi",u:userData,t:Date.now(),v:"0.0a",motd:"You agree to read this message"}]);
 	});
-	this.on("t",(msg)=>{
-		this.sendArray([{m:"t",t:Date.now(),e:msg.e-Date.now()}]);
+	this.on("t",function(msg){
+		self.sendArray([{m:"t",t:Date.now(),e:msg.e-Date.now()}]);
 	});
-	this.api.db.on("userCreate",(cid,user)=>{
-		if(cid == this.cid){
-            this.user = user;
-            let self = this;
-            this.user.on("userSet",function(){
-                let data = this.user.toJson();
-                data.id = this.user.id;
+	API.db.on("userCreate",function(cid,user){
+		if(cid == self.cid){
+            self.user = user;
+            self.user.on("userSet",function(){
+                let data = self.user.toJson();
+                data.id = self.user.id;
                 data.m = "p";
-                this.sendArray([data]);
+                self.sendArray([data]);
             });
         }
     });
