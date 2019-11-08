@@ -60,7 +60,7 @@ ChannelManager.prototype.verifySet = function(room,msg){
 	return msg.set;
 };
 
-ChannelManager.prototype.isLobby(_id) {
+ChannelManager.prototype.isLobby = function(_id) {
     if (_id.startsWith("lobby")) {
         if (_id == "lobby") {
             return true;
